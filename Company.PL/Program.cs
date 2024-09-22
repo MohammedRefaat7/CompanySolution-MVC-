@@ -1,3 +1,5 @@
+using Company.BLL.Interfaces;
+using Company.BLL.Repositories;
 using Company.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,12 +13,16 @@ namespace Company.PL
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            
+            builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
             builder.Services.AddDbContext<CompanyDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            builder.Services.AddDbContext<CompanyDbContext>(); // Allow Dependency Injection
+
+            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>(); // Allow Dependency Injection for DepartmentRepository Class
 
             var app = builder.Build();
 
