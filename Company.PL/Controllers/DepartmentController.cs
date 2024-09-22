@@ -76,5 +76,42 @@ namespace Company.PL.Controllers
             return View(department);
 
         }
+
+
+        //{{{  TASK  }}} ...
+        public IActionResult Delete(int? id)
+        {
+            //if (id is null)
+            //{
+            //    return BadRequest();
+            //}
+            //var dept = _departmentRepository.GetbyId(id.Value);
+            //if (dept is null)
+            //{ return NotFound(); }
+
+            //return View(dept);
+            return Details(id, "Delete");
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(Department department, [FromRoute] int id)
+        {
+            if (id != department.Id) { return BadRequest(); }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _departmentRepository.Delete(department);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (System.Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+
+            }
+            return View(department);
+        }
     }
 }
