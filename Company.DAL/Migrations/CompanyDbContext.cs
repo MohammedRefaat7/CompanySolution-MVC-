@@ -10,10 +10,14 @@ namespace Company.DAL.Migrations
 {
     public class CompanyDbContext :DbContext
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public CompanyDbContext() : base()
         {
-            optionsBuilder.UseSqlServer("Server=. ; Database=CompanyDb ; Trusted_Connection =true ;");
+            
         }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer("Server=. ; Database=CompanyDb ; Trusted_Connection =true ;");
+        //}
 
         public DbSet<Department> Departments { get; set; }
         public DbSet<Employee> Employees { get; set; }
