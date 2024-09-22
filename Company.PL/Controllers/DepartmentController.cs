@@ -22,7 +22,7 @@ namespace Company.PL.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Department department) 
+        public IActionResult Create(Department department)
         {
             if (ModelState.IsValid)
             {
@@ -32,7 +32,7 @@ namespace Company.PL.Controllers
             return View(department);
         }
 
-        public IActionResult Details(int? Id)
+        public IActionResult Details(int? Id, string ViewName = "Details")
         {
             if (Id is null)
             {
@@ -42,8 +42,39 @@ namespace Company.PL.Controllers
             if (dept is null)
                 return NotFound();
             else
-                return View(dept);
+                return View(ViewName, dept);
         }
 
+        public IActionResult Edit(int? id)
+        {
+            //if (id is null) { return BadRequest(); }
+            //var department = _departmentRepository.GetbyId(id.Value);
+            //if (department is null) { return NotFound(); }
+            //else
+            //    return View(department);
+            return Details(id, "Edit");
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Department department , [FromRoute] int Id)
+        {
+            if(department.Id != Id) { return BadRequest(); }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _departmentRepository.Update(department);
+                    return RedirectToAction(nameof(Index));
+
+                }
+                catch (System.Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+            }
+            return View(department);
+
+        }
     }
 }
