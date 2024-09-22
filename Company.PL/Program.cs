@@ -1,4 +1,4 @@
-using Company.DAL.Migrations;
+using Company.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.PL

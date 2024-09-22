@@ -17,7 +17,7 @@ namespace Company.DAL.Models
         public string PhoneNumber { get; set; }
         [EmailAddress]
         public string? Email { get; set; }
-        public DateTime HiringDate { get; set; }
+        public DateTime? HiringDate { get; set; }
         public string? ImageURL { get; set; }
 
         public Department Department { get; set; }
