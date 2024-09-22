@@ -1,3 +1,5 @@
+using Company.BLL.Interfaces;
+using Company.BLL.Repositories;
 using Company.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +19,8 @@ namespace Company.PL
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            builder.Services.AddDbContext<CompanyDbContext>(); // Allow Dependency Injection
 
             var app = builder.Build();
 
