@@ -22,6 +22,8 @@ namespace Company.PL
 
             builder.Services.AddDbContext<CompanyDbContext>(); // Allow Dependency Injection
 
+            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>(); // Allow Dependency Injection for DepartmentRepository Class
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
