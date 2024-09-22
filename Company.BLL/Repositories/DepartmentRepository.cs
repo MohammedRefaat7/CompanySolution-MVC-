@@ -41,5 +41,6 @@ namespace Company.BLL.Repositories
             _dbContext.Update(department);
             return _dbContext.SaveChanges();
         }
+
     }
 }

@@ -32,7 +32,18 @@ namespace Company.PL.Controllers
             return View(department);
         }
 
-        
+        public IActionResult Details(int? Id)
+        {
+            if (Id is null)
+            {
+                return BadRequest();
+            }
+            var dept = _departmentRepository.GetById(Id.Value);
+            if (dept is null)
+                return NotFound();
+            else
+                return View(dept);
+        }
 
     }
 }
