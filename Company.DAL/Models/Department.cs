@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace Company.DAL.Models
     {
         [Required(ErrorMessage = "Name Is Required")]
         [MaxLength(55)]
+        
         public string Name { get; set; }
         [Required(ErrorMessage = "Code Is Required")]
         public string Code { get; set; }
