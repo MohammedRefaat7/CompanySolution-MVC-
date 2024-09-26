@@ -36,8 +36,13 @@ namespace Company.BLL.Repositories
             return _dbcontext.Set<T>().ToList();
         }
         public T GetById(int Id)
-        => _dbcontext.Set<T>().Find(Id);
-
+        {
+            if(typeof(T) == typeof(Employee))
+            {
+                return (T)(object) _dbcontext.Employees.Include(e => e.Department).Where(e => e.Id == Id).FirstOrDefault();
+            }
+            return _dbcontext.Set<T>().Find(Id);
+        }
         public int Update(T item)
         {
             _dbcontext.Update(item);

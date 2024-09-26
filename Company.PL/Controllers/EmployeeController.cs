@@ -36,8 +36,23 @@ namespace Company.PL.Controllers
             return View(employee);
         }
 
-        
-              
-        
+        public IActionResult Details(int? id)
+        {
+            
+            if (id is null)
+            {
+                return BadRequest();
+            }
+            var emp = _iemployeeRepository.GetById(id.Value);
+            if (emp is null)
+            {
+                return NotFound();
+            }
+            //ViewData["DepartmentName"] = _iDepartmentRepository.GetById(id.Value);
+            return View(emp);
+        }
+
+
+
     }
 }
