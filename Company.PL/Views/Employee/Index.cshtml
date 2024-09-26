@@ -39,10 +39,7 @@
                     <td>@Html.DisplayFor(D => emp.Email)</td>
                     <td>@emp.HiringDate</td>
                     
-
-                    <td><a asp-action="Details" asp-route-id="@emp.Id"><i class="fas fa-eye"></i></a></td>
-                    <td><a asp-action="Edit" asp-controller="Employee" asp-route-id="@emp.Id"><i class="fas fa-edit"></i></a></td>
-                    <td><a asp-action="Delete" asp-controller="Employee" asp-route-id="@emp.Id"><i class="fas fa-trash"></i></a></td>
+                    <partial name="_ButtonIndexPartialView" model="emp.Id" />
                 </tr>
             }
         </tbody>

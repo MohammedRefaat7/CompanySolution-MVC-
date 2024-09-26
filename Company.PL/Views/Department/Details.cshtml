@@ -5,18 +5,7 @@
 
 <h3 class="alert-primary align-baseline">@Model.Name Department Details</h3>
 
-<div>
-    <label class="col-form-label" asp-for="Code"></label>
-    <input readonly class="form-control" asp-for="Code" />
-</div>
-<div>
-    <label class="col-form-label" asp-for="Name"></label>
-    <input readonly class="form-control" asp-for="Name" />
-</div>
-<div>
-    <label class="col-form-label" asp-for="CreatedAt"></label>
-    <input readonly class="form-control" asp-for="CreatedAt" />
-</div>
-<br />
+<partial name="PartialViews/_DetailsDeletePartialView" />
+
 <a asp-action="Edit" asp-controller="Department" asp-route-id="@Model.Id" class="btn btn-primary btn-outline-danger">Edit</a>
 <a asp-action="Index" asp-controller="Department" class="btn btn-primary btn-outline-dark">Back</a>
