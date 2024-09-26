@@ -2,6 +2,9 @@
 using Company.BLL.Repositories;
 using Company.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 
 namespace Company.PL.Controllers
 {
@@ -36,7 +39,7 @@ namespace Company.PL.Controllers
             return View(employee);
         }
 
-        public IActionResult Details(int? id)
+        public IActionResult Details(int? id , string viewname = "Details")
         {
             
             if (id is null)
@@ -49,10 +52,42 @@ namespace Company.PL.Controllers
                 return NotFound();
             }
             //ViewData["DepartmentName"] = _iDepartmentRepository.GetById(id.Value);
-            return View(emp);
+            return View(viewname ,emp);
         }
 
+        public IActionResult Edit(int? id)
+        {
+            //if (id is null) { return BadRequest(); }
+            //var department = _departmentRepository.GetbyId(id.Value);
+            //if (department is null) { return NotFound(); }
+            //else
+            //    return View(department);
+            ViewBag.department = _iDepartmentRepository.GetAll();
+            return Details(id, "Edit");
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Employee employee, [FromRoute] int Id)
+        {
+            if (employee.Id != Id) { return BadRequest(); }
 
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _iemployeeRepository.Update(employee);
+                    return RedirectToAction(nameof(Index));
+
+                }
+                
+                catch (System.Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+            }
+            return View(employee);
+
+        }
 
     }
 }

@@ -17,10 +17,6 @@
     <label class="col-form-label" asp-for="CreatedAt"></label>
     <input readonly class="form-control" asp-for="CreatedAt" />
 </div>
-<div>
-    <label class="col-form-label" asp-for="Employees.Count">Count Of Employees</label>
-    <input readonly class="form-control" asp-for="Employees.Count" />
-</div>
 <br />
 <a asp-action="Edit" asp-controller="Department" asp-route-id="@Model.Id" class="btn btn-primary btn-outline-danger">Edit</a>
 <a asp-action="Index" asp-controller="Department" class="btn btn-primary btn-outline-dark">Back</a>
