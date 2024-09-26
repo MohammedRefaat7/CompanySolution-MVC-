@@ -2,7 +2,10 @@
 @{
     ViewData["Title"] = "All Employees";
 }
+<partial name="_CreatedDeletedMsgPartialView" model="@(TempData["CreatedMsg"]?? TempData["DeletedMsg"] )" />
+
 <a class="btn btn-primary btn-outline-dark" asp-action="Create" asp-controller="Employee">Add New Employee</a>
+
 <br />
 @if (Model.Count() > 0)
 {

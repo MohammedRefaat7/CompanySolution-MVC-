@@ -28,7 +28,11 @@ namespace Company.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                _departmentRepository.Add(department);
+                int Result = _departmentRepository.Add(department);
+                if (Result > 0)
+                {
+                    TempData["CreatedMsg"] = "Department Is Created";
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(department);
@@ -108,7 +112,9 @@ namespace Company.PL.Controllers
             {
                 try
                 {
-                    _departmentRepository.Delete(department);
+                    int Result = _departmentRepository.Delete(department);
+                    if (Result > 0)
+                    { TempData["DeletedMsg"] = "Department Is Deleted"; }
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)

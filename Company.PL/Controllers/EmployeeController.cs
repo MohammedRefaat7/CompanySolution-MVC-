@@ -33,10 +33,14 @@ namespace Company.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                _iemployeeRepository.Add(employee);
+                int result = _iemployeeRepository.Add(employee);
+                if(result > 0)
+                {
+                    TempData["CreatedMsg"] = "Employee Is Created";
+                }
                 return RedirectToAction(nameof(Index));
             }
-            else
+            
             return View(employee);
         }
 
@@ -114,7 +118,10 @@ namespace Company.PL.Controllers
             {
                 try
                 {
-                    _iemployeeRepository.Delete(employee);
+                    int Result = _iemployeeRepository.Delete(employee);
+
+                    if(Result > 0)
+                    { TempData["DeletedMsg"] = "Employee Is Deleted";  }
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)
