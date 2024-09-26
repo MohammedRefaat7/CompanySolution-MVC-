@@ -1,6 +1,8 @@
 ﻿using Company.BLL.Interfaces;
 using Company.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace Company.PL.Controllers
 {
@@ -67,6 +69,10 @@ namespace Company.PL.Controllers
                     _departmentRepository.Update(department);
                     return RedirectToAction(nameof(Index));
 
+                }
+                catch(DbUpdateException ex) when(ex.InnerException is SqlException sqlException && sqlException.Number == 2601)
+                {
+                    return BadRequest("The Name field must be unique. A record with this name already exists.");
                 }
                 catch (System.Exception ex)
                 {

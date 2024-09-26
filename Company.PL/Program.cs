@@ -23,6 +23,7 @@ namespace Company.PL
             builder.Services.AddDbContext<CompanyDbContext>(); // Allow Dependency Injection
 
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>(); // Allow Dependency Injection for DepartmentRepository Class
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();  // Allow Dependency Injection for DepartmentRepository Class
 
             var app = builder.Build();
 

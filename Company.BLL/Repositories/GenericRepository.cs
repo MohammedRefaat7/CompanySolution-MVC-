@@ -1,5 +1,7 @@
 ﻿using Company.BLL.Interfaces;
 using Company.DAL.Contexts;
+using Company.DAL.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,8 +30,11 @@ namespace Company.BLL.Repositories
         }
 
         public IEnumerable<T> GetAll()
-         => _dbcontext.Set<T>().ToList();
-
+        {
+            if (typeof(T) == typeof(Employee))
+            { return (IEnumerable<T>) _dbcontext.Employees.Include(E => E.Department).ToList(); }
+            return _dbcontext.Set<T>().ToList();
+        }
         public T GetById(int Id)
         => _dbcontext.Set<T>().Find(Id);
 
