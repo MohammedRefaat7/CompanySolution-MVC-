@@ -36,6 +36,7 @@ namespace Company.PL.Controllers
                 _iemployeeRepository.Add(employee);
                 return RedirectToAction(nameof(Index));
             }
+            else
             return View(employee);
         }
 

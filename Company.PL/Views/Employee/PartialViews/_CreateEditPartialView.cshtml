@@ -1,6 +1,6 @@
 ﻿@model Employee
 @{
-    var departments = new SelectList(@ViewBag.department, "Id", "Name");
+    var departments = new SelectList(@ViewBag.department ?? new List<Department>() ,nameof(Department.Id), nameof(Department.Name));
 }
 <div>
     <label class="col-form-label-lg" asp-for="Name"></label>

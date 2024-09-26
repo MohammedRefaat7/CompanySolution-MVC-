@@ -32,7 +32,7 @@ namespace Company.BLL.Repositories
         public IEnumerable<T> GetAll()
         {
             if (typeof(T) == typeof(Employee))
-            { return (IEnumerable<T>) _dbcontext.Employees.Include(E => E.Department).ToList(); }
+            { return (IEnumerable<T>) _dbcontext.Employees.Include(E => E.Department).ToList() ; }
             return _dbcontext.Set<T>().ToList();
         }
         public T GetById(int Id)
