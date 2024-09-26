@@ -13,7 +13,7 @@ namespace Company.DAL.Contexts.Configurations
     {
         public void Configure(EntityTypeBuilder<Employee> builder)
         {
-            builder.Property(x => x.HiringDate).IsRequired(false);
+            builder.Property(x => x.HiringDate).IsRequired(true);
         }
     }
 }

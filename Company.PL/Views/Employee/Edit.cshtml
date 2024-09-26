@@ -1,16 +1,17 @@
-﻿@model Department
+﻿@model Employee
 @{
     ViewData["Title"] = "Edit";
+    
 }
 
-<h3 class="alert-primary align-baseline">Edit @Model.Name Department</h3>
+<h3 class="alert-primary align-baseline">Edit @Model.Name Data</h3>
 <br />
 <form asp-action="Edit">
-
+   
     <partial name="PartialViews/_CreateEditPartialView" />
 
     <input type="submit" value="SAVE" class="btn btn-primary btn-outline-dark" />
-    <a asp-action="Index" asp-controller="Department" class="btn btn-light btn-outline-danger">Back To Departments Page</a>
+    <a asp-action="Index" asp-controller="Employee" class="btn btn-light btn-outline-danger">Back To All Employees Page</a>
 </form>
 @section _ValidationScripts {
     <partial name="_ValidationScriptsPartial" />

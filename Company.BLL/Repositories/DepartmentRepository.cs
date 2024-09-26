@@ -9,38 +9,16 @@ using System.Threading.Tasks;
 
 namespace Company.BLL.Repositories
 {
-    public class DepartmentRepository : IDepartmentRepository
+    public class DepartmentRepository : GenericRepository<Department>, IDepartmentRepository
     {
-        private readonly CompanyDbContext _dbContext;
-        public DepartmentRepository(CompanyDbContext dbContext)
+        private readonly CompanyDbContext _dbcontext;
+        public DepartmentRepository(CompanyDbContext dbContext) : base(dbContext)    //CTOR Chaining
         {
-            _dbContext = dbContext;
-        }
-        public int Add(Department department)
-        {
-            _dbContext.Add(department);
-            return _dbContext.SaveChanges();
+            _dbcontext = dbContext;
         }
 
-        public int Delete(Department department)
-        {
-            _dbContext.Remove(department);
-            return _dbContext.SaveChanges();
-        }
-
-        public IEnumerable<Department> GetAll() 
-            =>  _dbContext.Departments.ToList();
-
-        public Department GetById(int Id)
-        {
-            return _dbContext.Departments.Find(Id);
-        }
-
-        public int Update(Department department)
-        {
-            _dbContext.Update(department);
-            return _dbContext.SaveChanges();
-        }
-
+        public Department GetByName(string name)
+            =>_dbcontext.Departments.Where(d => d.Name == name).FirstOrDefault();
+        
     }
 }

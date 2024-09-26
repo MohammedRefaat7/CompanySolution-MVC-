@@ -1,0 +1,13 @@
+﻿@model Employee
+@{
+    ViewData["Title"] = "Details";
+    @*var dn = ViewData["DepartmentName"] as string;*@
+}
+
+<h3 class="alert-primary align-baseline">@Model.Name Data</h3>
+
+<partial name="PartialViews/_DetailsDeletePartialView" />
+
+<a asp-action="Edit" asp-controller="Employee" asp-route-id="@Model.Id" class="btn btn-primary btn-outline-danger">Edit</a>
+<a asp-action="Index" asp-controller="Employee" class="btn btn-primary btn-outline-dark">Back</a>
+

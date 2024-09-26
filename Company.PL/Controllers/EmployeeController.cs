@@ -1,54 +1,63 @@
 ﻿using Company.BLL.Interfaces;
+using Company.BLL.Repositories;
 using Company.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 
 namespace Company.PL.Controllers
 {
-    public class DepartmentController : Controller
+    public class EmployeeController : Controller
     {
-        private readonly IDepartmentRepository _departmentRepository;
-        public DepartmentController(IDepartmentRepository departmentRepository)
+        private readonly IEmployeeRepository _iemployeeRepository;
+        private readonly IDepartmentRepository _iDepartmentRepository;
+        public EmployeeController(IEmployeeRepository IemployeeRepository , IDepartmentRepository departmentRepository) 
         {
-            _departmentRepository = departmentRepository;
+            _iemployeeRepository = IemployeeRepository;
+            _iDepartmentRepository = departmentRepository;
         }
         public IActionResult Index()
         {
-            var departments = _departmentRepository.GetAll();
-            return View(departments);
+            var AllEmployees = _iemployeeRepository.GetAll();
+            return View(AllEmployees);
         }
         public IActionResult Create()
         {
+            ViewBag.department = _iDepartmentRepository.GetAll();
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Department department)
+        public IActionResult Create(Employee employee)
         {
             if (ModelState.IsValid)
             {
-                int Result = _departmentRepository.Add(department);
-                if (Result > 0)
+                int result = _iemployeeRepository.Add(employee);
+                if(result > 0)
                 {
-                    TempData["CreatedMsg"] = "Department Is Created";
+                    TempData["CreatedMsg"] = "Employee Is Created";
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(department);
+            
+            return View(employee);
         }
 
-        public IActionResult Details(int? Id, string ViewName = "Details")
+        public IActionResult Details(int? id , string viewname = "Details")
         {
-            if (Id is null)
+            
+            if (id is null)
             {
                 return BadRequest();
             }
-            var dept = _departmentRepository.GetById(Id.Value);
-            if (dept is null)
+            var emp = _iemployeeRepository.GetById(id.Value);
+            if (emp is null)
+            {
                 return NotFound();
-            else
-                return View(ViewName, dept);
+            }
+            //ViewData["DepartmentName"] = _iDepartmentRepository.GetById(id.Value);
+            return View(viewname ,emp);
         }
 
         public IActionResult Edit(int? id)
@@ -58,37 +67,33 @@ namespace Company.PL.Controllers
             //if (department is null) { return NotFound(); }
             //else
             //    return View(department);
+            ViewBag.department = _iDepartmentRepository.GetAll();
             return Details(id, "Edit");
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Department department , [FromRoute] int Id)
+        public IActionResult Edit(Employee employee, [FromRoute] int Id)
         {
-            if(department.Id != Id) { return BadRequest(); }
+            if (employee.Id != Id) { return BadRequest(); }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _departmentRepository.Update(department);
+                    _iemployeeRepository.Update(employee);
                     return RedirectToAction(nameof(Index));
 
                 }
-                catch(DbUpdateException ex) when(ex.InnerException is SqlException sqlException && sqlException.Number == 2601)
-                {
-                    return BadRequest("The Name field must be unique. A record with this name already exists.");
-                }
+                
                 catch (System.Exception ex)
                 {
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
-            return View(department);
+            return View(employee);
 
         }
 
-
-        //{{{  TASK  }}} ...
         public IActionResult Delete(int? id)
         {
             //if (id is null)
@@ -100,30 +105,33 @@ namespace Company.PL.Controllers
             //{ return NotFound(); }
 
             //return View(dept);
+            
             return Details(id, "Delete");
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(Department department, [FromRoute] int id)
+        public IActionResult Delete(Employee employee , [FromRoute] int id)
         {
-            if (id != department.Id) { return BadRequest(); }
-
-            if (ModelState.IsValid)
+            if(employee.Id != id)
+            { return BadRequest(); }
+            if (ModelState.IsValid) 
             {
                 try
                 {
-                    int Result = _departmentRepository.Delete(department);
-                    if (Result > 0)
-                    { TempData["DeletedMsg"] = "Department Is Deleted"; }
+                    int Result = _iemployeeRepository.Delete(employee);
+
+                    if(Result > 0)
+                    { TempData["DeletedMsg"] = "Employee Is Deleted";  }
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)
                 {
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
-
             }
-            return View(department);
+            return View(employee);
         }
+
+        
     }
 }
