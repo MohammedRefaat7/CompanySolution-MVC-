@@ -27,6 +27,7 @@ namespace Company.PL
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();  // Allow Dependency Injection for DepartmentRepository Class
 
             builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
+            builder.Services.AddAutoMapper(M => M.AddProfile(new DepartmentProfile()));
 
             var app = builder.Build();
 

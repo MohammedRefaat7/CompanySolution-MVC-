@@ -11,12 +11,11 @@ namespace Company.DAL.Models
 {
     public class Department : BaseEntity
     {
-        [Required(ErrorMessage = "Name Is Required")]
+        [Required]
         [MaxLength(55)]
-        
         public string Name { get; set; }
-        [MinLength(2)]
-        [Required(ErrorMessage = "Code Is Required")]
+        
+        [Required]
         public string Code { get; set; }
         
         public ICollection<Employee> Employees { get; set; } = new HashSet<Employee>();
