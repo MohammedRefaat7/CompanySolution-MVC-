@@ -1,6 +1,7 @@
 using Company.BLL.Interfaces;
 using Company.BLL.Repositories;
 using Company.DAL.Contexts;
+using Company.PL.MappingProfiles;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.PL
@@ -24,6 +25,8 @@ namespace Company.PL
 
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>(); // Allow Dependency Injection for DepartmentRepository Class
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();  // Allow Dependency Injection for DepartmentRepository Class
+
+            builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
 
             var app = builder.Build();
 
