@@ -21,10 +21,19 @@ namespace Company.PL.Controllers
             _iemployeeRepository = IemployeeRepository;
             _iDepartmentRepository = departmentRepository;
         }
-        
-        public IActionResult Index()
+
+        public IActionResult Index(string? SearchValue)
         {
-            var AllEmployees = _iemployeeRepository.GetAll();
+            IEnumerable<Employee> AllEmployees;
+            if (String.IsNullOrEmpty(SearchValue))
+            {
+                AllEmployees = _iemployeeRepository.GetAll();
+                
+            }
+            else
+            {
+                AllEmployees= _iemployeeRepository.GetEmployeesByName(SearchValue);
+            }
             var MappedEmployees = _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeViewModel>>(AllEmployees);
             return View(MappedEmployees);
         }
