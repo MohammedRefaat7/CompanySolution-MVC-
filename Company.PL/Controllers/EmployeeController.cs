@@ -162,6 +162,20 @@ namespace Company.PL.Controllers
             return View(employeeVM);
         }
 
-        
+        public IActionResult Search(string? SearchValue)
+        {
+            IEnumerable<Employee> AllEmployees;
+            if (String.IsNullOrEmpty(SearchValue))
+            {
+                AllEmployees = _iemployeeRepository.GetAll();
+
+            }
+            else
+            {
+                AllEmployees = _iemployeeRepository.GetEmployeesByName(SearchValue);
+            }
+            var MappedEmployees = _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeViewModel>>(AllEmployees);
+            return PartialView("_EmployeeTablePartialView",MappedEmployees);
+        }
     }
 }
