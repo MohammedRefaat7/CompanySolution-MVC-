@@ -17,36 +17,34 @@ namespace Company.BLL.Repositories
         {
             _dbcontext = dbContext;
         }
-        public int Add(T item)
+        public void Add(T item)
         {
             _dbcontext.Add(item);
-            return _dbcontext.SaveChanges();
         }
 
-        public int Delete(T item)
+        public void Delete(T item)
         {
             _dbcontext.Remove(item);
-            return _dbcontext.SaveChanges();
         }
 
         public IEnumerable<T> GetAll()
         {
             if (typeof(T) == typeof(Employee))
-            { return (IEnumerable<T>) _dbcontext.Employees.Include(E => E.Department).ToList() ; }
+            { return (IEnumerable<T>)_dbcontext.Employees.Include(E => E.Department).ToList(); }
             return _dbcontext.Set<T>().ToList();
         }
         public T GetById(int Id)
         {
-            if(typeof(T) == typeof(Employee))
+            if (typeof(T) == typeof(Employee))
             {
-                return (T)(object) _dbcontext.Employees.Include(e => e.Department).Where(e => e.Id == Id).FirstOrDefault();
+                return (T)(object)_dbcontext.Employees.Include(e => e.Department).Where(e => e.Id == Id).FirstOrDefault();
             }
             return _dbcontext.Set<T>().Find(Id);
         }
-        public int Update(T item)
+        public void Update(T item)
         {
             _dbcontext.Update(item);
-            return _dbcontext.SaveChanges();
-        }
+        }   
+        
     }
 }

@@ -10,17 +10,17 @@ namespace Company.PL.Controllers
 {
     public class DepartmentController : Controller
     {
-        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public DepartmentController(IDepartmentRepository departmentRepository , IMapper mapper)
+        public DepartmentController(IUnitOfWork unitOfWork , IMapper mapper)
         {
-            _departmentRepository = departmentRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
         public IActionResult Index()
         {
-            var departments = _departmentRepository.GetAll();
+            var departments = _unitOfWork.DepartmentRepository.GetAll();
             var MappedDept = _mapper.Map<IEnumerable<Department>, IEnumerable<DepartmentViewModel>>(departments);
             return View(MappedDept);
         }
@@ -35,7 +35,8 @@ namespace Company.PL.Controllers
             if (ModelState.IsValid)
             {
                 var MappedDept = _mapper.Map<DepartmentViewModel, Department>(departmentVM);
-                int Result = _departmentRepository.Add(MappedDept);
+                _unitOfWork.DepartmentRepository.Add(MappedDept);
+                int Result = _unitOfWork.Complete();
                 if (Result > 0)
                 {
                     TempData["CreatedMsg"] = "Department Is Created";
@@ -51,7 +52,7 @@ namespace Company.PL.Controllers
             {
                 return BadRequest();
             }
-            var dept = _departmentRepository.GetById(Id.Value);
+            var dept = _unitOfWork.DepartmentRepository.GetById(Id.Value);
             if (dept is null)
                 return NotFound();
             else
@@ -81,7 +82,8 @@ namespace Company.PL.Controllers
                 try
                 {
                     var MappedDept = _mapper.Map< DepartmentViewModel , Department>(departmentVM);
-                    _departmentRepository.Update(MappedDept);
+                    _unitOfWork.DepartmentRepository.Update(MappedDept);
+                    _unitOfWork.Complete();
                     return RedirectToAction(nameof(Index));
 
                 }
@@ -124,7 +126,8 @@ namespace Company.PL.Controllers
                 try
                 {
                     var MappedDept = _mapper.Map<DepartmentViewModel, Department>(departmentVM);
-                    int Result = _departmentRepository.Delete(MappedDept);
+                    _unitOfWork.DepartmentRepository.Delete(MappedDept);
+                    int Result = _unitOfWork.Complete();
                     if (Result > 0)
                     { TempData["DeletedMsg"] = "Department Is Deleted"; }
                     return RedirectToAction(nameof(Index));
