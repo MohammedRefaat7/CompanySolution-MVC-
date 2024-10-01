@@ -5,7 +5,7 @@
         public static string UploadFile(IFormFile file , string FolderName)
         {
             // CurrentDirectory\\wwwroot\\Files\\FolderName    (FilePath)
-            string FolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\Files", FolderName);
+            string FolderPath = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot\\Files", FolderName);
 
             // Unique FileName
             string FileName = $"{Guid.NewGuid()}{file.FileName}";
@@ -17,7 +17,7 @@
             using var Fs = new FileStream(FilePath, FileMode.Create);
             file.CopyTo(Fs);
 
-            return FilePath;
+            return FileName;
         }
     }
 }

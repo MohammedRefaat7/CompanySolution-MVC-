@@ -3,6 +3,11 @@
     var departments = new SelectList(@ViewBag.department ?? new List<Department>() ,nameof(Department.Id), nameof(Department.Name));
 }
 <div>
+    <label class="col-form-label-lg" asp-for="Image"></label>
+    <input class="form-control" asp-for="Image" />
+    <span class="text-danger" asp-validation-for="Image"></span>
+</div>
+<div>
     <label class="col-form-label-lg" asp-for="Name"></label>
     <input class="form-control" asp-for="Name" />
     <span class="text-danger" asp-validation-for="Name"></span>

@@ -24,6 +24,9 @@ namespace Company.PL.Models
         [EmailAddress]
         public string? Email { get; set; }
         public DateTime HiringDate { get; set; }
+
+        [Display(Name = "Image")]
+        public IFormFile? Image { get; set; }
         public string? ImageURL { get; set; }
 
 

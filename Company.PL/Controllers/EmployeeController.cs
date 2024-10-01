@@ -2,6 +2,7 @@
 using Company.BLL.Interfaces;
 using Company.BLL.Repositories;
 using Company.DAL.Models;
+using Company.PL.Helpers;
 using Company.PL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -56,10 +57,15 @@ namespace Company.PL.Controllers
 
                 } */
                 #endregion
+
                 
+                employeeVM.ImageURL = DocumentSettings.UploadFile(employeeVM.Image,"Images");
                 var MappedEmp = _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
+
+                 
                 _unitofwork.EmployeeRepository.Add(MappedEmp);
                 int result = _unitofwork.Complete();
+
                 if (result > 0)
                 {
                     TempData["CreatedMsg"] = "Employee Is Created";
@@ -108,7 +114,9 @@ namespace Company.PL.Controllers
             {
                 try
                 {
+                    employeeVM.ImageURL = DocumentSettings.UploadFile(employeeVM.Image, "Images");
                     var MappedEmp = _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
+
                     _unitofwork.EmployeeRepository.Update(MappedEmp);
                     _unitofwork.Complete();
                     return RedirectToAction(nameof(Index));
