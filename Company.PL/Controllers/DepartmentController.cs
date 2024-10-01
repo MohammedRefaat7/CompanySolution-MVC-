@@ -1,5 +1,7 @@
-﻿using Company.BLL.Interfaces;
+﻿using AutoMapper;
+using Company.BLL.Interfaces;
 using Company.DAL.Models;
+using Company.PL.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -8,15 +10,19 @@ namespace Company.PL.Controllers
 {
     public class DepartmentController : Controller
     {
-        private readonly IDepartmentRepository _departmentRepository;
-        public DepartmentController(IDepartmentRepository departmentRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+
+        public DepartmentController(IUnitOfWork unitOfWork , IMapper mapper)
         {
-            _departmentRepository = departmentRepository;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
         public IActionResult Index()
         {
-            var departments = _departmentRepository.GetAll();
-            return View(departments);
+            var departments = _unitOfWork.DepartmentRepository.GetAll();
+            var MappedDept = _mapper.Map<IEnumerable<Department>, IEnumerable<DepartmentViewModel>>(departments);
+            return View(MappedDept);
         }
         public IActionResult Create()
         {
@@ -24,18 +30,20 @@ namespace Company.PL.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Department department)
+        public IActionResult Create(DepartmentViewModel departmentVM)
         {
             if (ModelState.IsValid)
             {
-                int Result = _departmentRepository.Add(department);
+                var MappedDept = _mapper.Map<DepartmentViewModel, Department>(departmentVM);
+                _unitOfWork.DepartmentRepository.Add(MappedDept);
+                int Result = _unitOfWork.Complete();
                 if (Result > 0)
                 {
                     TempData["CreatedMsg"] = "Department Is Created";
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(department);
+            return View(departmentVM);
         }
 
         public IActionResult Details(int? Id, string ViewName = "Details")
@@ -44,11 +52,14 @@ namespace Company.PL.Controllers
             {
                 return BadRequest();
             }
-            var dept = _departmentRepository.GetById(Id.Value);
+            var dept = _unitOfWork.DepartmentRepository.GetById(Id.Value);
             if (dept is null)
                 return NotFound();
             else
-                return View(ViewName, dept);
+            {
+                var MappedDept = _mapper.Map<Department, DepartmentViewModel>(dept);
+                return View(ViewName, MappedDept);
+            }
         }
 
         public IActionResult Edit(int? id)
@@ -62,15 +73,17 @@ namespace Company.PL.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Department department , [FromRoute] int Id)
+        public IActionResult Edit(DepartmentViewModel departmentVM , [FromRoute] int Id)
         {
-            if(department.Id != Id) { return BadRequest(); }
+            if(departmentVM.Id != Id) { return BadRequest(); }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _departmentRepository.Update(department);
+                    var MappedDept = _mapper.Map< DepartmentViewModel , Department>(departmentVM);
+                    _unitOfWork.DepartmentRepository.Update(MappedDept);
+                    _unitOfWork.Complete();
                     return RedirectToAction(nameof(Index));
 
                 }
@@ -83,7 +96,7 @@ namespace Company.PL.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
-            return View(department);
+            return View(departmentVM);
 
         }
 
@@ -104,15 +117,17 @@ namespace Company.PL.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(Department department, [FromRoute] int id)
+        public IActionResult Delete(DepartmentViewModel departmentVM, [FromRoute] int id)
         {
-            if (id != department.Id) { return BadRequest(); }
+            if (id != departmentVM.Id) { return BadRequest(); }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    int Result = _departmentRepository.Delete(department);
+                    var MappedDept = _mapper.Map<DepartmentViewModel, Department>(departmentVM);
+                    _unitOfWork.DepartmentRepository.Delete(MappedDept);
+                    int Result = _unitOfWork.Complete();
                     if (Result > 0)
                     { TempData["DeletedMsg"] = "Department Is Deleted"; }
                     return RedirectToAction(nameof(Index));
@@ -123,7 +138,7 @@ namespace Company.PL.Controllers
                 }
 
             }
-            return View(department);
+            return View(departmentVM);
         }
     }
 }

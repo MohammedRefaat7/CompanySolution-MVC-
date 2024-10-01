@@ -1,4 +1,4 @@
-﻿@model Employee
+﻿@model EmployeeViewModel
 @{
     ViewData["Title"] = "Edit";
     
@@ -6,7 +6,7 @@
 
 <h3 class="alert-primary align-baseline">Edit @Model.Name Data</h3>
 <br />
-<form asp-action="Edit">
+<form asp-action="Edit" enctype="multipart/form-data">
    
     <partial name="PartialViews/_CreateEditPartialView" />
 

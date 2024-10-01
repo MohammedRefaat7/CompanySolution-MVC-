@@ -1,6 +1,9 @@
-﻿using Company.BLL.Interfaces;
+﻿using AutoMapper;
+using Company.BLL.Interfaces;
 using Company.BLL.Repositories;
 using Company.DAL.Models;
+using Company.PL.Helpers;
+using Company.PL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -10,38 +13,67 @@ namespace Company.PL.Controllers
 {
     public class EmployeeController : Controller
     {
-        private readonly IEmployeeRepository _iemployeeRepository;
-        private readonly IDepartmentRepository _iDepartmentRepository;
-        public EmployeeController(IEmployeeRepository IemployeeRepository , IDepartmentRepository departmentRepository) 
+        private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitofwork;
+
+        public EmployeeController(IMapper mapper, IUnitOfWork Unitofwork) 
         {
-            _iemployeeRepository = IemployeeRepository;
-            _iDepartmentRepository = departmentRepository;
+            _mapper = mapper;
+            _unitofwork = Unitofwork;
         }
-        public IActionResult Index()
+
+        public IActionResult Index(string? SearchValue)
         {
-            var AllEmployees = _iemployeeRepository.GetAll();
-            return View(AllEmployees);
+            IEnumerable<Employee> AllEmployees;
+            if (String.IsNullOrEmpty(SearchValue))
+            {
+                AllEmployees = _unitofwork.EmployeeRepository.GetAll();
+                
+            }
+            else
+            {
+                AllEmployees= _unitofwork.EmployeeRepository.GetEmployeesByName(SearchValue);
+            }
+            var MappedEmployees = _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeViewModel>>(AllEmployees);
+            return View(MappedEmployees);
         }
         public IActionResult Create()
         {
-            ViewBag.department = _iDepartmentRepository.GetAll();
+            ViewBag.department = _unitofwork.DepartmentRepository.GetAll();
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Employee employee)
+        public IActionResult Create(EmployeeViewModel employeeVM)
         {
             if (ModelState.IsValid)
             {
-                int result = _iemployeeRepository.Add(employee);
-                if(result > 0)
+                #region Manual Mapping 
+
+                /* var emp = new Employee();      
+                {
+                    emp.Name = employeeVM.Name;
+                    emp.Age = employeeVM.Age;
+
+                } */
+                #endregion
+
+                
+                employeeVM.ImageURL = DocumentSettings.UploadFile(employeeVM.Image,"Images");
+                var MappedEmp = _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
+
+                 
+                _unitofwork.EmployeeRepository.Add(MappedEmp);
+                int result = _unitofwork.Complete();
+
+                if (result > 0)
                 {
                     TempData["CreatedMsg"] = "Employee Is Created";
                 }
                 return RedirectToAction(nameof(Index));
             }
             
-            return View(employee);
+            return View(employeeVM);
         }
 
         public IActionResult Details(int? id , string viewname = "Details")
@@ -51,13 +83,15 @@ namespace Company.PL.Controllers
             {
                 return BadRequest();
             }
-            var emp = _iemployeeRepository.GetById(id.Value);
+            var emp = _unitofwork.EmployeeRepository.GetById(id.Value);
             if (emp is null)
             {
                 return NotFound();
             }
             //ViewData["DepartmentName"] = _iDepartmentRepository.GetById(id.Value);
-            return View(viewname ,emp);
+
+            var MappedEmp = _mapper.Map<Employee, EmployeeViewModel>(emp);
+            return View(viewname , MappedEmp);
         }
 
         public IActionResult Edit(int? id)
@@ -67,20 +101,24 @@ namespace Company.PL.Controllers
             //if (department is null) { return NotFound(); }
             //else
             //    return View(department);
-            ViewBag.department = _iDepartmentRepository.GetAll();
+            ViewBag.department = _unitofwork.DepartmentRepository.GetAll();
             return Details(id, "Edit");
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Employee employee, [FromRoute] int Id)
+        public IActionResult Edit(EmployeeViewModel employeeVM, [FromRoute] int Id)
         {
-            if (employee.Id != Id) { return BadRequest(); }
+            if (employeeVM.Id != Id) { return BadRequest(); }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _iemployeeRepository.Update(employee);
+                    employeeVM.ImageURL = DocumentSettings.UploadFile(employeeVM.Image, "Images");
+                    var MappedEmp = _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
+
+                    _unitofwork.EmployeeRepository.Update(MappedEmp);
+                    _unitofwork.Complete();
                     return RedirectToAction(nameof(Index));
 
                 }
@@ -90,7 +128,7 @@ namespace Company.PL.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
-            return View(employee);
+            return View(employeeVM);
 
         }
 
@@ -110,17 +148,18 @@ namespace Company.PL.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(Employee employee , [FromRoute] int id)
+        public IActionResult Delete(EmployeeViewModel employeeVM , [FromRoute] int id)
         {
-            if(employee.Id != id)
+            if(employeeVM.Id != id)
             { return BadRequest(); }
             if (ModelState.IsValid) 
             {
                 try
                 {
-                    int Result = _iemployeeRepository.Delete(employee);
-
-                    if(Result > 0)
+                    var MappedEmp = _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
+                    _unitofwork.EmployeeRepository.Delete(MappedEmp);
+                    int Result = _unitofwork.Complete();
+                    if (Result > 0)
                     { TempData["DeletedMsg"] = "Employee Is Deleted";  }
                     return RedirectToAction(nameof(Index));
                 }
@@ -129,9 +168,23 @@ namespace Company.PL.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
-            return View(employee);
+            return View(employeeVM);
         }
 
-        
+        public IActionResult Search(string? SearchValue)
+        {
+            IEnumerable<Employee> AllEmployees;
+            if (String.IsNullOrEmpty(SearchValue))
+            {
+                AllEmployees = _unitofwork.EmployeeRepository.GetAll();
+
+            }
+            else
+            {
+                AllEmployees = _unitofwork.EmployeeRepository.GetEmployeesByName(SearchValue);
+            }
+            var MappedEmployees = _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeViewModel>>(AllEmployees);
+            return PartialView("_EmployeeTablePartialView",MappedEmployees);
+        }
     }
 }
