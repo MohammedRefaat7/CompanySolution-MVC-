@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Company.DAL.Contexts
 {
-    public class CompanyDbContext : IdentityDbContext
+    public class CompanyDbContext : IdentityDbContext<ApplicationUser>
     {
         public CompanyDbContext(DbContextOptions<CompanyDbContext> options) : base(options)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Company.PL.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Company.PL.Controllers
 {
@@ -8,5 +9,7 @@ namespace Company.PL.Controllers
         {
             return View();
         }
-    }
+
+        
+	}
 }
