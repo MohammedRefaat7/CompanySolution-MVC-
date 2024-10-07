@@ -33,6 +33,7 @@ namespace Company.DAL.Contexts
 
         // public DbSet<IdentityUser> Users { get; set; }
         // public DbSet<IdentityRole> Roles { get; set; }
+
     }
 }
 
