@@ -8,10 +8,12 @@ namespace Company.PL.Controllers
     public class AccountController : Controller
     {
 		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly SignInManager<ApplicationUser> _signInManager;
 
-		public AccountController(UserManager<ApplicationUser> userManager)
+		public AccountController(UserManager<ApplicationUser> userManager , SignInManager<ApplicationUser> signInManager)
         {
 			_userManager = userManager;
+			_signInManager = signInManager;
 		}
         public IActionResult Register()
         {
@@ -33,7 +35,7 @@ namespace Company.PL.Controllers
                 var Result =  await _userManager.CreateAsync(User , model.Password);
                 if (Result.Succeeded)
                 {
-                    return RedirectToAction("Login");
+                    return RedirectToAction(nameof(Login));
                 }
                 else
                     foreach(var error in Result.Errors)
@@ -42,5 +44,39 @@ namespace Company.PL.Controllers
             }
             return View(model);
         }
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+        [HttpPost]
+		public async Task<IActionResult> Login(LoginViewModel model)
+		{
+			if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user is not null)
+                {
+                    bool flag = await _userManager.CheckPasswordAsync(user, model.Password);
+                    if (flag) 
+                    {
+                        var Result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
+                        if (Result.Succeeded) 
+                        {
+                            return RedirectToAction("Index","Home");
+                        }
+                    }
+					else
+					{
+						ModelState.AddModelError(string.Empty, "Incorrect Password");
+					}
+				}
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Email isn't  Exists");
+                }
+            }
+            return View(model);
+		}
 	}
 }

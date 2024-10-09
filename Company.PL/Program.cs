@@ -3,6 +3,7 @@ using Company.BLL.Repositories;
 using Company.DAL.Contexts;
 using Company.DAL.Models;
 using Company.PL.MappingProfiles;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,10 +39,15 @@ namespace Company.PL
                 options.Password.RequireDigit = true;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = true;
-            }).AddEntityFrameworkStores<CompanyDbContext>();
+            }).AddEntityFrameworkStores<CompanyDbContext>()
+              .AddDefaultTokenProviders();
             //builder.Services.AddScoped<UserManager<ApplicationUser>>();
 			//builder.Services.AddScoped<SignInManager<ApplicationUser>>();
-            builder.Services.AddAuthentication();
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie( options =>
+            {
+                options.LoginPath = "Account/Login";
+                options.AccessDeniedPath = "Home/Error";
+            });
 
 			var app = builder.Build();
 
@@ -57,12 +63,12 @@ namespace Company.PL
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Account}/{action=Register}/{id?}");
+                pattern: "{controller=Account}/{action=Login}/{id?}");
 
             app.Run();
         }
