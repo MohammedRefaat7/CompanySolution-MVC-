@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.IO;
 using Company.BLL.Interfaces;
 using Company.BLL.Repositories;
 using Company.DAL.Models;
@@ -8,10 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Company.PL.Controllers
 {
-    public class EmployeeController : Controller
+	[Authorize]
+	public class EmployeeController : Controller
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitofwork;
@@ -58,8 +61,11 @@ namespace Company.PL.Controllers
                 } */
                 #endregion
 
+                if (employeeVM.Image is not null)
+                {
+                    employeeVM.ImageURL = DocumentSettings.UploadFile(employeeVM.Image, "Images");
+                }
                 
-                employeeVM.ImageURL = DocumentSettings.UploadFile(employeeVM.Image,"Images");
                 var MappedEmp = _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
 
                  
@@ -114,7 +120,25 @@ namespace Company.PL.Controllers
             {
                 try
                 {
-                    employeeVM.ImageURL = DocumentSettings.UploadFile(employeeVM.Image, "Images");
+                     
+                    if (employeeVM.Image is not null)
+                    {
+                        //var emp = _unitofwork.EmployeeRepository.GetById(Id);
+                        //if (!string.IsNullOrEmpty(emp.ImageURL))
+                        //{
+                        //    try
+                        //    {
+                        //        DocumentSettings.DeleteFile("Images", emp.ImageURL);
+                        //    }
+                        //    catch (Exception ex)
+                        //    {
+                        //        ModelState.AddModelError(string.Empty, "Error deleting old file: " + ex.Message);
+                        //        return View(employeeVM); // Return to view with the error
+                        //    }
+                        //}
+                        employeeVM.ImageURL = DocumentSettings.UploadFile(employeeVM.Image, "Images");
+                    }
+
                     var MappedEmp = _mapper.Map<EmployeeViewModel, Employee>(employeeVM);
 
                     _unitofwork.EmployeeRepository.Update(MappedEmp);
@@ -125,7 +149,7 @@ namespace Company.PL.Controllers
                 
                 catch (System.Exception ex)
                 {
-                    ModelState.AddModelError(string.Empty, ex.Message);
+                    ModelState.AddModelError(string.Empty, "Error updating employee: " +  ex.Message);
                 }
             }
             return View(employeeVM);
@@ -160,7 +184,14 @@ namespace Company.PL.Controllers
                     _unitofwork.EmployeeRepository.Delete(MappedEmp);
                     int Result = _unitofwork.Complete();
                     if (Result > 0)
-                    { TempData["DeletedMsg"] = "Employee Is Deleted";  }
+                    { 
+                        TempData["DeletedMsg"] = "Employee Is Deleted";
+
+                        if (employeeVM.Image is not null)
+                        {
+                            DocumentSettings.DeleteFile("Images", employeeVM.ImageURL);
+                        }
+                    }
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)

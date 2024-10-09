@@ -19,5 +19,19 @@
 
             return FileName;
         }
+
+        public static void DeleteFile(string FolderName, string FileName) 
+        {
+            // Get FilePath
+            string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\Files", FolderName, FileName);
+
+            // Check If File Exists or Not  
+            if (File.Exists(FilePath))
+            {
+                // (if exists remove it)
+                File.Delete(FilePath);
+            }
+        }
+        
     }
 }

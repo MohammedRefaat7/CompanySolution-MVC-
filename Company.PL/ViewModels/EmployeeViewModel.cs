@@ -26,6 +26,9 @@ namespace Company.PL.Models
         public DateTime HiringDate { get; set; }
 
         [Display(Name = "Image")]
+
+
+        //[FileExtensions(Extensions = "jpg,jpeg,png,JPG,JPEG,PNG", ErrorMessage = "Please upload an image file (jpg, jpeg, png).")]
         public IFormFile? Image { get; set; }
         public string? ImageURL { get; set; }
 

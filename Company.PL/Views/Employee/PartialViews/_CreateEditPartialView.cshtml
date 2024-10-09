@@ -2,6 +2,7 @@
 @{
     var departments = new SelectList(@ViewBag.department ?? new List<Department>() ,nameof(Department.Id), nameof(Department.Name));
 }
+<input asp-for="ImageURL" hidden />
 <div>
     <label class="col-form-label-lg" asp-for="Image"></label>
     <input class="form-control" asp-for="Image" />
